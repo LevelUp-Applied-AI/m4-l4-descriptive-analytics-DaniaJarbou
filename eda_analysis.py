@@ -202,9 +202,43 @@ def run_hypothesis_tests(df):
         - ANOVA: Does GPA differ across departments?
         - Correlation test: Is the correlation between study hours and GPA significant?
     """
-    # TODO: Run at least two hypothesis tests on patterns you observe in the data
-    # TODO: Report the test statistic, p-value, and your interpretation
-    pass
+    #  Run at least two hypothesis tests on patterns you observe in the data
+    #  Report the test statistic, p-value, and your interpretation
+    
+
+
+    alpha = 0.05
+    #Students with internships have a higher GPA
+    interns_gpa = df[df["has_internship"] == "Yes"]["gpa"]
+    non_interns_gpa = df[df["has_internship"] == "No"]["gpa"]
+    t_stat, p_two = stats.ttest_ind(interns_gpa, non_interns_gpa, equal_var=False)
+    n1,n2 = len(interns_gpa) , len(non_interns_gpa)
+    var1, var2 = np.var(interns_gpa, ddof=1), np.var(non_interns_gpa, ddof=1)
+    pooled_std = np.sqrt(((n1 - 1) * var1 + (n2 - 1) * var2) / (n1 + n2 - 2))
+    cohen_d = (np.mean(interns_gpa) - np.mean(non_interns_gpa)) / pooled_std
+
+    print(f"H1 (Internship vs GPA): t-stat = {t_stat:.4f}, p-value = {p_two:.4f}")
+    print(f"Cohen's d (Effect Size): {cohen_d:.4f}")
+
+    # Interpretation
+    if p_two < alpha:
+        print("Result: Significant difference found! Internships are associated with GPA.")
+    else:
+        print("Result: No significant difference found.")
+    #Scholarship status is associated with department
+    contingency_table = pd.crosstab(df['scholarship'], df['department'])
+    chi2, p_val_chi, dof, expected = stats.chi2_contingency(contingency_table)
+
+    print(f"\nH2 (Scholarship vs Dept): chi2 = {chi2:.4f}, p-value = {p_val_chi:.4f}")
+    if p_val_chi < alpha:
+        print("Result: There is a significant association between Scholarship and Department.")
+    else:
+        print("Result: Scholarship distribution is independent of Department.")
+
+    return {
+        "internship_ttest": {"t_stat": t_stat, "p_value": p_two, "cohen_d": cohen_d},
+        "scholarship_chi2": {"chi2": chi2, "p_value": p_val_chi, "dof": dof}
+    }
 
 
 def main():
@@ -219,7 +253,8 @@ def main():
     plot_distributions(df)
     #  Analyze correlations
     plot_correlations(df)
-    # TODO: Run hypothesis tests
+    # : Run hypothesis tests
+    run_hypothesis_tests(df)
     # TODO: Write a FINDINGS.md summarizing your analysis
 
 
