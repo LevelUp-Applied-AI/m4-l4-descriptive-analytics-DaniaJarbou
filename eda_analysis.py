@@ -147,11 +147,42 @@ def plot_correlations(df):
         Saves at least one correlation visualization to the output/ directory
         (e.g., a heatmap, scatter plot, or pair plot).
     """
-    # TODO: Compute the correlation matrix for numeric columns
-    # TODO: Create a heatmap or scatter plots showing key relationships
-    # TODO: Save the visualization(s) to the output/ directory
-    pass
+    #  Compute the correlation matrix for numeric columns
+    #  Create a heatmap or scatter plots showing key relationships
+    #  Save the visualization(s) to the output/ directory
+    numeric_cols = ["gpa", "study_hours_weekly", "attendance_pct"]
+    corr = df[numeric_cols].corr().round(3)
+   
+    fig ,ax = plt.subplots(figsize=(8,6))
+    mask = np.triu(np.ones_like(corr,dtype=bool))
+    sns.heatmap(corr,annot=True, fmt=".2f", mask=mask,linewidths=0.5,
+                cmap="coolwarm", center=0 , ax=ax,
+                 linecolor ="white", square=True )
+    ax.set_title("Correlations Heatmap")
+    fig.tight_layout()
+    fig.savefig("output/correlation_heatmap.png", dpi=120)
+    plt.close(fig)
 
+    #scatter : gpa by  study_hours_weekly
+    r_study = corr.loc["gpa", "study_hours_weekly"]
+    fig , ax = plt.subplots(figsize = (8,6))
+    sns.scatterplot(data=df, x="study_hours_weekly", y="gpa", alpha=0.5, ax=ax)
+    ax.set_title(f"Relationship: Study Hours vs GPA (r = {r_study:.2f})")
+    ax.set_xlabel("Weekly Study Hours")
+    ax.set_ylabel("GPA")
+    fig.savefig("output/scatter_study_gpa.png")
+    plt.close(fig)
+
+
+    #scatter : gpa by attendance_pct
+    r_attendance = corr.loc["gpa", "attendance_pct"]
+    fig , ax = plt.subplots(figsize = (8,6))
+    sns.scatterplot(data=df, x="attendance_pct", y="gpa", alpha=0.5, ax=ax)
+    ax.set_title(f"Relationship: Attendance vs GPA (r = {r_attendance:.2f})")
+    ax.set_xlabel("Attendance Percentage (%)")
+    ax.set_ylabel("GPA")
+    fig.savefig("output/attendance_gpa.png")
+    plt.close(fig)
 
 def run_hypothesis_tests(df):
     """Run statistical tests to validate observed patterns.
@@ -186,7 +217,8 @@ def main():
     print ("Data loaded, profiled, and cleaned successfully")
     #  Generate distribution plots
     plot_distributions(df)
-    # TODO: Analyze correlations
+    #  Analyze correlations
+    plot_correlations(df)
     # TODO: Run hypothesis tests
     # TODO: Write a FINDINGS.md summarizing your analysis
 
