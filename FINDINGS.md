@@ -3,9 +3,10 @@
 ### 1. Dataset Description
 - **Total Records:** 2,000 student entries.
 - **Features:** 10 columns covering academic, behavioral, and demographic data.
-- **Data Quality:** - Imputed missing values for `commute_minutes` using the median.
-    - Handled outliers in `study_hours_weekly` (approx. 5% of data) to ensure accurate analysis.
-    - Standardized `scholarship` categories.
+- **Data Quality :**
+ - **Missing Values:** Documentation suggested 5% missing values in `study_hours_weekly`, but manual verification confirmed **0 missing values**. 
+    - **Imputation:** Missing values in `commute_minutes` were imputed using the median.
+    - **Scholarship "None" Handling:** Recognized that "None" values in the scholarship column are often interpreted as NaN by pandas. These were explicitly handled as a string category to maintain the integrity of the Chi-square test.
 
 ### 2. Key Distribution Findings
 - **Academic Performance:** `gpa` and `attendance_pct` show a slight left-skew, indicating a generally high-performing student population.
